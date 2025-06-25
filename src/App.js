@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaStar, FaFacebook, FaTwitter, FaInstagram, FaArrowUp, FaWhatsapp } from "react-icons/fa";
+
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -23,21 +24,7 @@ const translations = {
     contactUs: "تواصل معنا",
     heroTitle: "حلول ذكية لمنزلك",
     heroSubtitle: "مع Net Geeks، تحكم بمنزلك بسهولة وأناقة.",
-    productShowcase: "📷 معرض صور المنتجات",
-    productImages: [
-      {
-        src: "https://th.bing.com/th/id/OIP.N_mKRL-X4YKDfNt4oQNInQHaFf?r=0&rs=1&pid=ImgDetMain",
-        alt: "منتج 1"
-      },
-      {
-        src: "https://th.bing.com/th/id/OIP.6XOE6XMopNCM1lEzgZ1uAQHaFJ?r=0&w=700&h=486&rs=1&pid=ImgDetMain",
-        alt: "منتج 2"
-      },
-      {
-        src: "https://th.bing.com/th/id/R.ca0a9c602e779f3b428cd1891c9c21bf?rik=Vg6zSqwMltHhfw&pid=ImgRaw&r=0",
-        alt: "منتج 3"
-      }
-    ],
+
     servicesList: [
       { title: "أنظمة الإنتركم", description: "تركيب وصيانة أنظمة إنتركم Hikvision بكفاءة عالية." },
       { title: "كاميرات داخلية وخارجية", description: "تركيب كاميرات TAPO وHikvision مع دعم ما بعد البيع." },
@@ -77,7 +64,7 @@ const translations = {
     heroTitle: "Smart Solutions for Your Home",
     heroSubtitle: "With Net Geeks, control your home with ease and style.",
     productShowcase: "📷 Product Showcase",
-     productImages: [
+    productImages: [
       {
         src: "https://th.bing.com/th/id/OIP.N_mKRL-X4YKDfNt4oQNInQHaFf?r=0&rs=1&pid=ImgDetMain",
         alt: "Product 1"
@@ -135,7 +122,7 @@ const HeroSection = ({ t }) => (
         className="mt-6 bg-yellow-400 text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => window.open("https://wa.me/201008876825", "_blank")}
+        onClick={() => window.open("https://wa.me/201095438932", "_blank")}
       >
         {t.contact}
       </motion.button>
@@ -243,7 +230,7 @@ const Footer = ({ t }) => {
         <div>
           <h3 className="text-xl font-bold mb-4 text-yellow-400">{t.contactUs}</h3>
           <p className="text-gray-300 mb-2">info@netgeeks.com</p>
-          <p className="text-gray-300 mb-4">+20 123 456 7890</p>
+          <p className="text-gray-300 mb-4">+20 1095438932</p>
           <div className="flex space-x-6">
             <motion.a
               href="#"
@@ -303,7 +290,10 @@ const RatingStars = () => (
     ))}
   </div>
 );
-const ProductSlideshow = ({ t }) => {
+const MediaSection = ({ t }) => {
+  const isArabic = t.lang === "ar";
+
+  // إعدادات السلايدر
   const settings = {
     dots: true,
     infinite: true,
@@ -314,10 +304,10 @@ const ProductSlideshow = ({ t }) => {
     slidesToScroll: 1,
     fade: true,
     arrows: true,
-    rtl: t.lang === "ar", // دعم RTL
+    rtl: isArabic, // دعم RTL للعربية
   };
 
-  // الحصول على الصور من الترجمة أو استخدام الافتراضية
+  // الصور لنسخة الإنجليزية
   const productImages = t.productImages || [
     {
       src: "https://th.bing.com/th/id/OIP.N_mKRL-X4YKDfNt4oQNInQHaFf?r=0&rs=1&pid=ImgDetMain",
@@ -333,14 +323,8 @@ const ProductSlideshow = ({ t }) => {
     }
   ];
 
-  // التأكد من أن productImages هي مصفوفة
-  if (!Array.isArray(productImages)) {
-    console.error("productImages is not an array");
-    return null;
-  }
-
   return (
-    <section id="products" className="py-32 bg-gradient-to-br from-white to-gray-100">
+    <section id="products" className="py-24 bg-gradient-to-br from-white to-gray-100">
       <div className="container mx-auto text-center px-4">
         <motion.h2
           className="text-5xl font-bold mb-12 text-blue-900"
@@ -350,25 +334,47 @@ const ProductSlideshow = ({ t }) => {
         >
           {t.productShowcase}
         </motion.h2>
-        <div className="max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-2xl border border-yellow-400">
-          <Slider {...settings}>
-            {productImages.map((img, i) => (
-              <motion.div
-                key={i}
-                className="h-[500px] flex items-center justify-center bg-white"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.6 }}
-              >
-                <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
-              </motion.div>
-            ))}
-          </Slider>
-        </div>
+
+        {/* عرض فيديو عند استخدام اللغة العربية */}
+        {isArabic ? (
+          <div className="max-w-4xl mx-auto overflow-hidden rounded-xl shadow-2xl border border-yellow-400">
+            <div className="aspect-w-16 aspect-h-9">
+              <iframe
+                src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&rel=0"
+                title="فيديو تعريفي"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-[500px] md:h-[600px] object-cover"
+              ></iframe>
+            </div>
+          </div>
+        ) : (
+          // عرض سلايدر الصور عند استخدام اللغة الإنجليزية
+          <div className="max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-2xl border border-yellow-400">
+            <Slider {...settings}>
+              {productImages.map((img, i) => (
+                <motion.div
+                  key={i}
+                  className="h-[500px] flex items-center justify-center bg-white"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+              ))}
+            </Slider>
+          </div>
+        )}
       </div>
     </section>
   );
 };
+
 // Services Component
 const Services = ({ t }) => {
   const [openVideo, setOpenVideo] = useState(false);
@@ -558,23 +564,127 @@ const App = () => {
         >
           <style>
             {`
-              .animate-gradient-bg {
-                background: linear-gradient(45deg, #1E3A8A, #3B82F6, #FBBF24, #1E3A8A);
-                background-size: 400%;
-                animation: gradient 15s ease infinite;
-              }
-              @keyframes gradient {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-              }
-            `}
+    .animate-gradient-bg {
+      background: linear-gradient(45deg, #1E3A8A, #3B82F6, #FBBF24, #1E3A8A);
+      background-size: 400%;
+      animation: gradient 15s ease infinite;
+    }
+    
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* --- RTL Arrows for Slick Slider --- */
+    [dir="rtl"] .slick-prev:before {
+      content: '\\276E';
+      left: auto !important;
+      right: 15px !important;
+    }
+
+    [dir="rtl"] .slick-next:before {
+      content: '\\276F';
+    }
+
+    /* --- Responsive Styles --- */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem !important;
+      }
+
+      h1.text-5xl {
+        font-size: 1.75rem !important;
+      }
+
+      h2.text-5xl {
+        font-size: 1.5rem !important;
+      }
+
+      p.text-xl {
+        font-size: 1rem !important;
+      }
+
+      .h-[80vh] {
+        height: auto !important;
+        min-height: 60vh !important;
+      }
+
+      .h-[500px] {
+        height: 300px !important;
+      }
+
+      .text-4xl {
+        font-size: 1.25rem !important;
+      }
+
+      .text-2xl {
+        font-size: 1.1rem !important;
+      }
+
+      .px-8.py-3 {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.9rem !important;
+      }
+
+      .grid-cols-3 {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+      }
+
+      .max-w-5xl {
+        max-width: 100% !important;
+      }
+
+      .hidden.sm\\:flex {
+        display: flex !important;
+      }
+
+      .w-full.max-w-3xl {
+        width: 95% !important;
+      }
+
+      .animate-gradient-bg {
+        background-size: 600% 600% !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .h-[500px] {
+        height: 250px !important;
+      }
+
+      .text-5xl {
+        font-size: 1.2rem !important;
+      }
+
+      .text-4xl {
+        font-size: 1rem !important;
+      }
+
+      .text-2xl {
+        font-size: 0.9rem !important;
+      }
+
+      .px-4.py-2 {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.8rem !important;
+      }
+
+      .backdrop-blur-md {
+        backdrop-filter: blur(8px) !important;
+      }
+
+      .animate-gradient-bg {
+        background-size: 800% 800% !important;
+      }
+    }
+  `}
           </style>
           <Header t={t} lang={lang} setLang={setLang} />
 
           <LoadingBar />
           <HeroSection t={t} />
-          <ProductSlideshow t={t} />
+          <MediaSection t={t} />
           <Services t={t} />
           <Customers t={t} />
           <Footer t={t} />
