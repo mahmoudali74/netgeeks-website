@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaStar, FaFacebook, FaTwitter, FaInstagram, FaArrowUp, FaWhatsapp } from "react-icons/fa";
-
+import { FaStar, FaFacebook, FaTwitter, FaInstagram, FaArrowUp, FaWhatsapp, FaRegEnvelope } from "react-icons/fa";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import emailjs from "emailjs-com";
 
 // Translations object
 const translations = {
@@ -24,7 +22,6 @@ const translations = {
     contactUs: "تواصل معنا",
     heroTitle: "حلول ذكية لمنزلك",
     heroSubtitle: "مع Net Geeks، تحكم بمنزلك بسهولة وأناقة.",
-
     servicesList: [
       { title: "أنظمة الإنتركم", description: "تركيب وصيانة أنظمة إنتركم Hikvision بكفاءة عالية." },
       { title: "كاميرات داخلية وخارجية", description: "تركيب كاميرات TAPO وHikvision مع دعم ما بعد البيع." },
@@ -102,35 +99,79 @@ const translations = {
   }
 };
 
-const HeroSection = ({ t }) => (
-  <section
-    id="home"
-    className="relative h-[80vh] bg-cover bg-center"
-    style={{
-      backgroundImage: "linear-gradient(to bottom, rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.3)), url('https://images.unsplash.com/photo-1604938257005-4f3e3b4c1d4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')",
-    }}
+const WelcomeScreen = ({ onStart }) => (
+  <motion.div
+    className="fixed inset-0 bg-blue-900 flex flex-col items-center justify-center z-[9999]"
+    initial={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.5 }}
   >
-    <motion.div
-      className="container mx-auto h-full flex flex-col items-center justify-center text-center text-white"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1 }}
+    <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">Net Geeks</h1>
+    <motion.button
+      onClick={onStart}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className="mt-4 px-8 py-4 bg-yellow-400 text-blue-900 rounded-full font-semibold hover:bg-yellow-300 transition"
     >
-      <h1 className="text-5xl md:text-7xl font-bold mb-4">{t.heroTitle}</h1>
-      <p className="text-xl md:text-2xl max-w-2xl">{t.heroSubtitle}</p>
-      <motion.button
-        className="mt-6 bg-yellow-400 text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => window.open("https://wa.me/201095438932", "_blank")}
-      >
-        {t.contact}
-      </motion.button>
-    </motion.div>
-  </section>
+      Start Your Journey With Us
+    </motion.button>
+  </motion.div>
 );
+// Contact Form Modal
+const ContactFormModal = ({ onClose }) => {
+  const [formData, setFormData] = useState({ name: "", phone: "", message: "" });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    emailjs.sendForm("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", e.target, "YOUR_PUBLIC_KEY")
+      .then(() => {
+        alert("Message sent successfully!");
+        onClose();
+      }, (error) => {
+        console.error(error);
+        alert("Failed to send message.");
+      });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+      <motion.div
+        className="bg-white p-8 rounded-xl max-w-md w-full shadow-2xl relative"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-red-500">×</button>
+        <h3 className="text-2xl font-bold mb-4 text-blue-900">Contact Us</h3>
+        <form onSubmit={handleSubmit}>
+          <input type="hidden" name="contact_number" value={Date.now()} />
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2">Name</label>
+            <input name="name" onChange={handleChange} required className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2">Phone</label>
+            <input name="phone" onChange={handleChange} required className="w-full border border-gray-300 p-2 rounded" />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2">Message</label>
+            <textarea name="message" onChange={handleChange} required className="w-full border border-gray-300 p-2 rounded"></textarea>
+          </div>
+          <button type="submit" className="w-full bg-blue-900 text-white py-2 rounded hover:bg-yellow-400 hover:text-blue-900 transition">
+            Send
+          </button>
+        </form>
+      </motion.div>
+    </div>
+  );
+};
+
 // Header Component
-const Header = ({ t, lang, setLang }) => {
+const Header = ({ t, lang, setLang, showContact }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
@@ -175,7 +216,14 @@ const Header = ({ t, lang, setLang }) => {
             >
               {t.services}
             </motion.button>
-
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={showContact}
+              className="px-4 py-2 rounded-full bg-yellow-400 text-blue-900 hover:bg-yellow-300 transition"
+            >
+              {t.contact}
+            </motion.button>
           </nav>
           <motion.button
             onClick={() => setLang(lang === "ar" ? "en" : "ar")}
@@ -190,6 +238,35 @@ const Header = ({ t, lang, setLang }) => {
     </motion.header>
   );
 };
+
+// Hero Section
+const HeroSection = ({ t }) => (
+  <section
+    id="home"
+    className="relative h-[80vh] bg-cover bg-center"
+    style={{
+      backgroundImage: "linear-gradient(to bottom, rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.3)), url('https://images.unsplash.com/photo-1604938257005-4f3e3b4c1d4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')",
+    }}
+  >
+    <motion.div
+      className="container mx-auto h-full flex flex-col items-center justify-center text-center text-white"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1 }}
+    >
+      <h1 className="text-5xl md:text-7xl font-bold mb-4">{t.heroTitle}</h1>
+      <p className="text-xl md:text-2xl max-w-2xl">{t.heroSubtitle}</p>
+      <motion.button
+        className="mt-6 bg-yellow-400 text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => window.open("https://wa.me/201095438932", "_blank")}
+      >
+        {t.contact}
+      </motion.button>
+    </motion.div>
+  </section>
+);
 
 // Footer Component
 const Footer = ({ t }) => {
@@ -233,7 +310,7 @@ const Footer = ({ t }) => {
           <p className="text-gray-300 mb-4">+20 1095438932</p>
           <div className="flex space-x-6">
             <motion.a
-              href="#"
+              href="#" 
               whileHover={{ scale: 1.3, rotate: 360 }}
               transition={{ type: "spring", stiffness: 300 }}
               className="text-white hover:text-yellow-400"
@@ -266,20 +343,6 @@ const Footer = ({ t }) => {
   );
 };
 
-// Language Toggle Component
-const LanguageToggle = ({ lang, setLang }) => (
-  <div className="fixed top-4 left-4 z-50">
-    <motion.button
-      onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-      className="bg-white/80 backdrop-blur-md text-sm text-blue-900 border border-yellow-400 px-4 py-2 rounded-full shadow-lg hover:bg-yellow-400 hover:text-blue-900"
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-    >
-      {lang === "ar" ? "English" : "العربية"}
-    </motion.button>
-  </div>
-);
-
 // Rating Stars Component
 const RatingStars = () => (
   <div className="flex justify-center mt-4">
@@ -290,10 +353,10 @@ const RatingStars = () => (
     ))}
   </div>
 );
+
+// Media Section
 const MediaSection = ({ t }) => {
   const isArabic = t.lang === "ar";
-
-  // إعدادات السلايدر
   const settings = {
     dots: true,
     infinite: true,
@@ -304,10 +367,8 @@ const MediaSection = ({ t }) => {
     slidesToScroll: 1,
     fade: true,
     arrows: true,
-    rtl: isArabic, // دعم RTL للعربية
+    rtl: isArabic,
   };
-
-  // الصور لنسخة الإنجليزية
   const productImages = t.productImages || [
     {
       src: "https://th.bing.com/th/id/OIP.N_mKRL-X4YKDfNt4oQNInQHaFf?r=0&rs=1&pid=ImgDetMain",
@@ -322,7 +383,6 @@ const MediaSection = ({ t }) => {
       alt: "Default Image 3"
     }
   ];
-
   return (
     <section id="products" className="py-24 bg-gradient-to-br from-white to-gray-100">
       <div className="container mx-auto text-center px-4">
@@ -334,8 +394,6 @@ const MediaSection = ({ t }) => {
         >
           {t.productShowcase}
         </motion.h2>
-
-        {/* عرض فيديو عند استخدام اللغة العربية */}
         {isArabic ? (
           <div className="max-w-4xl mx-auto overflow-hidden rounded-xl shadow-2xl border border-yellow-400">
             <div className="aspect-w-16 aspect-h-9">
@@ -349,7 +407,6 @@ const MediaSection = ({ t }) => {
             </div>
           </div>
         ) : (
-          // عرض سلايدر الصور عند استخدام اللغة الإنجليزية
           <div className="max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-2xl border border-yellow-400">
             <Slider {...settings}>
               {productImages.map((img, i) => (
@@ -387,7 +444,6 @@ const Services = ({ t }) => {
     setOpenVideo(false);
     setActiveIndex(null);
   };
-
   const videoUrls = [
     "https://www.youtube.com/embed/-SBao0_k0Is",
     "https://www.youtube.com/embed/8Dbv4qc4HEM",
@@ -396,7 +452,6 @@ const Services = ({ t }) => {
     "https://www.youtube.com/embed/t06jxbaaKbo",
     "https://www.youtube.com/embed/gCUyTRL9YRA",
   ];
-
   return (
     <section id="services" className="py-24 bg-gradient-to-br from-white to-gray-100">
       <div className="container mx-auto text-center">
@@ -528,6 +583,9 @@ const App = () => {
   const [lang, setLang] = useState("en");
   const [theme, setTheme] = useState("light");
   const [isLoading, setIsLoading] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [showContactForm, setShowContactForm] = useState(false);
+
   const t = translations[lang];
 
   // Simulate loading
@@ -540,43 +598,36 @@ const App = () => {
     document.documentElement.className = theme;
   }, [theme]);
 
+  const handleStart = () => {
+    setShowWelcome(false);
+  };
+
   return (
     <AnimatePresence>
-      {isLoading ? (
-        <motion.div
-          className="fixed inset-0 bg-blue-900 flex items-center justify-center z-[9999]"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.div
-            className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1 }}
-          />
-        </motion.div>
+      {showWelcome ? (
+        <WelcomeScreen onStart={handleStart} key="welcome" />
       ) : (
         <div
           dir={lang === "ar" ? "rtl" : "ltr"}
-          className={`min-h-screen relative animate-gradient-bg ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gradient-to-tl from-gray-100 to-white"
-            }`}
+          className={`min-h-screen relative animate-gradient-bg ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gradient-to-tl from-gray-100 to-white"} transition-all`}
           style={{ fontFamily: lang === "ar" ? "'Tajawal', sans-serif" : "'Inter', sans-serif" }}
         >
+          {/* Styles */}
           <style>
             {`
     .animate-gradient-bg {
-      background: linear-gradient(45deg, #1E3A8A, #3B82F6, #FBBF24, #1E3A8A);
+      background: linear-gradient(45deg, #1E3A8A, #3B82F6, #FBBF24, #1E3A8A); 
       background-size: 400%;
       animation: gradient 15s ease infinite;
     }
-    
+
     @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    /* --- RTL Arrows for Slick Slider --- */
+    /* RTL Arrows for Slick Slider */
     [dir="rtl"] .slick-prev:before {
       content: '\\276E';
       left: auto !important;
@@ -587,62 +638,48 @@ const App = () => {
       content: '\\276F';
     }
 
-    /* --- Responsive Styles --- */
     @media (max-width: 768px) {
       .container {
         padding: 0 1rem !important;
       }
-
       h1.text-5xl {
         font-size: 1.75rem !important;
       }
-
       h2.text-5xl {
         font-size: 1.5rem !important;
       }
-
       p.text-xl {
         font-size: 1rem !important;
       }
-
       .h-[80vh] {
         height: auto !important;
         min-height: 60vh !important;
       }
-
       .h-[500px] {
         height: 300px !important;
       }
-
       .text-4xl {
         font-size: 1.25rem !important;
       }
-
       .text-2xl {
         font-size: 1.1rem !important;
       }
-
       .px-8.py-3 {
         padding: 0.75rem 1.5rem !important;
         font-size: 0.9rem !important;
       }
-
       .grid-cols-3 {
         grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
       }
-
       .max-w-5xl {
         max-width: 100% !important;
       }
-
       .hidden.sm\\:flex {
         display: flex !important;
       }
-
       .w-full.max-w-3xl {
         width: 95% !important;
       }
-
       .animate-gradient-bg {
         background-size: 600% 600% !important;
       }
@@ -652,43 +689,46 @@ const App = () => {
       .h-[500px] {
         height: 250px !important;
       }
-
       .text-5xl {
         font-size: 1.2rem !important;
       }
-
       .text-4xl {
         font-size: 1rem !important;
       }
-
       .text-2xl {
         font-size: 0.9rem !important;
       }
-
       .px-4.py-2 {
         padding: 0.5rem 1rem !important;
         font-size: 0.8rem !important;
       }
-
       .backdrop-blur-md {
         backdrop-filter: blur(8px) !important;
       }
-
       .animate-gradient-bg {
         background-size: 800% 800% !important;
       }
     }
   `}
           </style>
-          <Header t={t} lang={lang} setLang={setLang} />
+
+          <Header t={t} lang={lang} setLang={setLang} showContact={() => setShowContactForm(true)} />
 
           <LoadingBar />
+
           <HeroSection t={t} />
+
           <MediaSection t={t} />
+
           <Services t={t} />
+
           <Customers t={t} />
+
           <Footer t={t} />
+
           <BackToTop />
+
+          {showContactForm && <ContactFormModal onClose={() => setShowContactForm(false)} />}
         </div>
       )}
     </AnimatePresence>
