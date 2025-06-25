@@ -99,6 +99,7 @@ const translations = {
   }
 };
 
+// Welcome Screen Component
 const WelcomeScreen = ({ onStart }) => (
   <motion.div
     className="fixed inset-0 bg-blue-900 flex flex-col items-center justify-center z-[9999]"
@@ -117,6 +118,7 @@ const WelcomeScreen = ({ onStart }) => (
     </motion.button>
   </motion.div>
 );
+
 // Contact Form Modal
 const ContactFormModal = ({ onClose }) => {
   const [formData, setFormData] = useState({ name: "", phone: "", message: "" });
@@ -173,6 +175,7 @@ const ContactFormModal = ({ onClose }) => {
 // Header Component
 const Header = ({ t, lang, setLang, showContact }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -182,6 +185,7 @@ const Header = ({ t, lang, setLang, showContact }) => {
   }, []);
   const scrollToSection = (id) => {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+    setMobileMenuOpen(false);
   };
   return (
     <motion.header
@@ -193,13 +197,19 @@ const Header = ({ t, lang, setLang, showContact }) => {
     >
       <div className="container mx-auto flex flex-wrap justify-between items-center px-4">
         <motion.div
-          className="text-2xl font-extrabold text-white"
+          className="text-xl sm:text-2xl font-extrabold text-white"
           whileHover={{ scale: 1.1 }}
         >
           Net Geeks
         </motion.div>
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-          <nav className="flex flex-wrap gap-2 text-white font-semibold text-sm md:text-base">
+        <button
+          className="sm:hidden text-white"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          ☰
+        </button>
+        <nav className={`${mobileMenuOpen ? "block" : "hidden"} sm:block w-full sm:w-auto mt-4 sm:mt-0`}>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-sm sm:text-base">
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
@@ -224,16 +234,16 @@ const Header = ({ t, lang, setLang, showContact }) => {
             >
               {t.contact}
             </motion.button>
-          </nav>
-          <motion.button
-            onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-            className="px-4 py-2 rounded-full bg-white text-blue-900 border border-yellow-400 hover:bg-yellow-400 hover:text-blue-900 text-sm"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {lang === "ar" ? "English" : "العربية"}
-          </motion.button>
-        </div>
+            <motion.button
+              onClick={() => setLang(lang === "ar" ? "en" : "ar")}
+              className="px-4 py-2 rounded-full bg-white text-blue-900 border border-yellow-400 hover:bg-yellow-400 hover:text-blue-900 text-sm"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {lang === "ar" ? "English" : "العربية"}
+            </motion.button>
+          </div>
+        </nav>
       </div>
     </motion.header>
   );
@@ -249,15 +259,15 @@ const HeroSection = ({ t }) => (
     }}
   >
     <motion.div
-      className="container mx-auto h-full flex flex-col items-center justify-center text-center text-white"
+      className="container mx-auto h-full flex flex-col items-center justify-center text-center text-white px-4"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
     >
-      <h1 className="text-5xl md:text-7xl font-bold mb-4">{t.heroTitle}</h1>
-      <p className="text-xl md:text-2xl max-w-2xl">{t.heroSubtitle}</p>
+      <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4">{t.heroTitle}</h1>
+      <p className="text-lg sm:text-xl md:text-2xl max-w-xl">{t.heroSubtitle}</p>
       <motion.button
-        className="mt-6 bg-yellow-400 text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition"
+        className="mt-6 bg-yellow-400 text-blue-900 px-6 py-2 rounded-full font-semibold hover:bg-yellow-300 transition"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => window.open("https://wa.me/201095438932", "_blank")}
@@ -274,69 +284,49 @@ const Footer = ({ t }) => {
     document.getElementById(id).scrollIntoView({ behavior: "smooth" });
   };
   return (
-    <footer className="bg-blue-900 text-white py-16">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 px-4">
+    <footer className="bg-blue-900 text-white py-12 sm:py-16">
+      <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
         <div>
           <img
             src="https://via.placeholder.com/150x50?text=Net+Geeks+Logo"
             alt="Net Geeks Logo"
-            className="h-12 mb-4"
+            className="h-8 sm:h-10 mb-4"
           />
-          <p className="text-gray-300 max-w-xs">{t.footerDescription}</p>
+          <p className="text-gray-300 text-sm sm:text-base">{t.footerDescription}</p>
         </div>
         <div>
-          <h3 className="text-xl font-bold mb-4 text-yellow-400">{t.quickLinks}</h3>
-          <ul className="space-y-3">
+          <h3 className="text-lg sm:text-xl font-bold mb-4 text-yellow-400">{t.quickLinks}</h3>
+          <ul className="space-y-2">
             <li>
-              <button onClick={() => scrollToSection("home")} className="hover:text-yellow-400 transition">
+              <button onClick={() => scrollToSection("home")} className="hover:text-yellow-400 transition text-sm sm:text-base">
                 {t.home}
               </button>
             </li>
             <li>
-              <button onClick={() => scrollToSection("services")} className="hover:text-yellow-400 transition">
+              <button onClick={() => scrollToSection("services")} className="hover:text-yellow-400 transition text-sm sm:text-base">
                 {t.services}
-              </button>
-            </li>
-            <li>
-              <button onClick={() => scrollToSection("contact")} className="hover:text-yellow-400 transition">
-                {t.contact}
               </button>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="text-xl font-bold mb-4 text-yellow-400">{t.contactUs}</h3>
-          <p className="text-gray-300 mb-2">info@netgeeks.com</p>
-          <p className="text-gray-300 mb-4">+20 1095438932</p>
-          <div className="flex space-x-6">
-            <motion.a
-              href="#" 
-              whileHover={{ scale: 1.3, rotate: 360 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="text-white hover:text-yellow-400"
-            >
-              <FaFacebook size={28} />
+          <h3 className="text-lg sm:text-xl font-bold mb-4 text-yellow-400">{t.contactUs}</h3>
+          <p className="text-gray-300 text-sm sm:text-base">info@netgeeks.com</p>
+          <p className="text-gray-300 mb-4 text-sm sm:text-base">+20 1095438932</p>
+          <div className="flex space-x-4">
+            <motion.a href="#" whileHover={{ scale: 1.3 }} className="text-white hover:text-yellow-400"> 
+              <FaFacebook size={20} />
             </motion.a>
-            <motion.a
-              href="#"
-              whileHover={{ scale: 1.3, rotate: 360 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="text-white hover:text-yellow-400"
-            >
-              <FaTwitter size={28} />
+            <motion.a href="#" whileHover={{ scale: 1.3 }} className="text-white hover:text-yellow-400">
+              <FaTwitter size={20} />
             </motion.a>
-            <motion.a
-              href="#"
-              whileHover={{ scale: 1.3, rotate: 360 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="text-white hover:text-yellow-400"
-            >
-              <FaInstagram size={28} />
+            <motion.a href="#" whileHover={{ scale: 1.3 }} className="text-white hover:text-yellow-400">
+              <FaInstagram size={20} />
             </motion.a>
           </div>
         </div>
       </div>
-      <div className="text-center mt-10 text-gray-400">
+      <div className="text-center mt-8 text-gray-400 text-xs sm:text-sm">
         © {new Date().getFullYear()} Net Geeks. All rights reserved.
       </div>
     </footer>
@@ -345,9 +335,9 @@ const Footer = ({ t }) => {
 
 // Rating Stars Component
 const RatingStars = () => (
-  <div className="flex justify-center mt-4">
+  <div className="flex justify-center mt-2 sm:mt-4">
     {[...Array(5)].map((_, i) => (
-      <motion.div key={i} whileHover={{ scale: 1.2 }} transition={{ type: "spring", stiffness: 300 }}>
+      <motion.div key={i} whileHover={{ scale: 1.2 }}>
         <FaStar className="text-yellow-400 mx-0.5" />
       </motion.div>
     ))}
@@ -384,10 +374,10 @@ const MediaSection = ({ t }) => {
     }
   ];
   return (
-    <section id="products" className="py-24 bg-gradient-to-br from-white to-gray-100">
+    <section id="products" className="py-12 sm:py-24 bg-gradient-to-br from-white to-gray-100">
       <div className="container mx-auto text-center px-4">
         <motion.h2
-          className="text-5xl font-bold mb-12 text-blue-900"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12 text-blue-900"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -395,24 +385,24 @@ const MediaSection = ({ t }) => {
           {t.productShowcase}
         </motion.h2>
         {isArabic ? (
-          <div className="max-w-4xl mx-auto overflow-hidden rounded-xl shadow-2xl border border-yellow-400">
+          <div className="max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto overflow-hidden rounded-xl shadow-2xl border border-yellow-400">
             <div className="aspect-w-16 aspect-h-9">
               <iframe
                 src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&rel=0"
                 title="فيديو تعريفي"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="w-full h-[500px] md:h-[600px] object-cover"
+                className="w-full h-[200px] sm:h-[300px] md:h-[400px]"
               ></iframe>
             </div>
           </div>
         ) : (
-          <div className="max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-2xl border border-yellow-400">
+          <div className="max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-3xl mx-auto overflow-hidden rounded-2xl shadow-2xl border border-yellow-400">
             <Slider {...settings}>
               {productImages.map((img, i) => (
                 <motion.div
                   key={i}
-                  className="h-[500px] flex items-center justify-center bg-white"
+                  className="h-[200px] sm:h-[300px] md:h-[400px] flex items-center justify-center bg-white"
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.6 }}
@@ -453,10 +443,10 @@ const Services = ({ t }) => {
     "https://www.youtube.com/embed/gCUyTRL9YRA",
   ];
   return (
-    <section id="services" className="py-24 bg-gradient-to-br from-white to-gray-100">
-      <div className="container mx-auto text-center">
+    <section id="services" className="py-12 sm:py-24 bg-gradient-to-br from-white to-gray-100">
+      <div className="container mx-auto text-center px-4">
         <motion.h2
-          className="text-4xl font-extrabold mb-12 text-blue-900"
+          className="text-3xl sm:text-4xl font-extrabold mb-8 sm:mb-12 text-blue-900"
           initial={{ y: -20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
@@ -464,22 +454,22 @@ const Services = ({ t }) => {
         >
           {t.ourServices}
         </motion.h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {t.servicesList.map((service, i) => (
             <motion.div
               key={i}
-              className="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-xl border-t-4 border-yellow-400 hover:scale-105 transition-all"
+              className="bg-white/80 backdrop-blur-md p-4 sm:p-6 rounded-xl shadow-xl border-t-4 border-yellow-400 hover:scale-105 transition-all"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <h3 className="text-2xl font-semibold mb-3 text-blue-900">{service.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{service.description}</p>
+              <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3 text-blue-900">{service.title}</h3>
+              <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{service.description}</p>
               <RatingStars />
               <button
                 onClick={() => handleOpen(i)}
-                className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-full hover:bg-yellow-400 hover:text-blue-900 transition"
+                className="mt-3 sm:mt-4 px-4 py-2 bg-blue-900 text-white rounded-full hover:bg-yellow-400 hover:text-blue-900 transition text-sm sm:text-base"
               >
                 {t.watchVideo}
               </button>
@@ -489,17 +479,17 @@ const Services = ({ t }) => {
       </div>
       {openVideo && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
-          <div className="relative w-full max-w-3xl p-4">
+          <div className="relative w-full max-w-xs sm:max-w-md md:max-w-xl p-4">
             <iframe
               src={videoUrls[activeIndex]}
               title="Service Video"
-              className="w-full h-[400px] rounded-xl shadow-2xl border border-yellow-400"
+              className="w-full h-[200px] sm:h-[300px] md:h-[400px] rounded-xl shadow-2xl border border-yellow-400"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
             <button
               onClick={handleClose}
-              className="absolute top-2 right-2 text-white bg-red-500 px-3 py-1 rounded-full hover:bg-red-600 transition"
+              className="absolute top-2 right-2 text-white bg-red-500 px-2 py-1 rounded-full hover:bg-red-600 transition text-sm"
             >
               ✖
             </button>
@@ -512,10 +502,10 @@ const Services = ({ t }) => {
 
 // Customers Component
 const Customers = ({ t }) => (
-  <section id="customers" className="py-24 bg-gray-100">
-    <div className="container mx-auto text-center">
+  <section id="customers" className="py-12 sm:py-24 bg-gray-100">
+    <div className="container mx-auto text-center px-4">
       <motion.h2
-        className="text-4xl font-bold mb-12 text-blue-900"
+        className="text-3xl sm:text-4xl font-bold mb-8 sm:mb-12 text-blue-900"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -523,7 +513,7 @@ const Customers = ({ t }) => (
       >
         {t.customers}
       </motion.h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {t.customersList.map((name, i) => (
           <motion.div
             key={i}
@@ -533,7 +523,7 @@ const Customers = ({ t }) => (
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: i * 0.05 }}
           >
-            <p className="text-gray-800">{name}</p>
+            <p className="text-gray-800 text-sm sm:text-base">{name}</p>
             <RatingStars />
           </motion.div>
         ))}
@@ -557,13 +547,13 @@ const BackToTop = () => {
   };
   return (
     <motion.button
-      className={`fixed bottom-8 right-8 bg-blue-900 text-white p-4 rounded-full shadow-lg hover:bg-yellow-400 hover:text-blue-900 ${isVisible ? "block" : "hidden"
+      className={`fixed bottom-4 right-4 sm:bottom-8 sm:right-8 bg-blue-900 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-yellow-400 hover:text-blue-900 ${isVisible ? "block" : "hidden"
         }`}
       onClick={scrollToTop}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
     >
-      <FaArrowUp size={20} />
+      <FaArrowUp size={16} />
     </motion.button>
   );
 };
@@ -642,69 +632,13 @@ const App = () => {
       .container {
         padding: 0 1rem !important;
       }
-      h1.text-5xl {
-        font-size: 1.75rem !important;
-      }
-      h2.text-5xl {
-        font-size: 1.5rem !important;
-      }
-      p.text-xl {
-        font-size: 1rem !important;
-      }
-      .h-[80vh] {
-        height: auto !important;
-        min-height: 60vh !important;
-      }
-      .h-[500px] {
-        height: 300px !important;
-      }
-      .text-4xl {
-        font-size: 1.25rem !important;
-      }
-      .text-2xl {
-        font-size: 1.1rem !important;
-      }
-      .px-8.py-3 {
-        padding: 0.75rem 1.5rem !important;
-        font-size: 0.9rem !important;
-      }
-      .grid-cols-3 {
-        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-      }
-      .max-w-5xl {
-        max-width: 100% !important;
-      }
-      .hidden.sm\\:flex {
-        display: flex !important;
-      }
-      .w-full.max-w-3xl {
-        width: 95% !important;
-      }
+
       .animate-gradient-bg {
         background-size: 600% 600% !important;
       }
     }
 
     @media (max-width: 480px) {
-      .h-[500px] {
-        height: 250px !important;
-      }
-      .text-5xl {
-        font-size: 1.2rem !important;
-      }
-      .text-4xl {
-        font-size: 1rem !important;
-      }
-      .text-2xl {
-        font-size: 0.9rem !important;
-      }
-      .px-4.py-2 {
-        padding: 0.5rem 1rem !important;
-        font-size: 0.8rem !important;
-      }
-      .backdrop-blur-md {
-        backdrop-filter: blur(8px) !important;
-      }
       .animate-gradient-bg {
         background-size: 800% 800% !important;
       }
